@@ -1,71 +1,74 @@
 from set_parameters import Param
+from errno import ENOENT
 from requests import get
-from os import getcwd
+from os import getcwd, strerror
 from os.path import basename, exists
-from numpy import loadtxt, array, str
-import csv
-from datetime import datetime, date
+from numpy import loadtxt, str
+from csv import writer
 
-from pprint import pprint
 class Struct():
     def __init__(self, t=None, l=None):
         '''
         t: file paths list
-        l: GO database
+        l: Gene Ontology database link
         '''
         self.test_list = t
         self.link = l
         self.go_dict = dict()
 
-        # keep all database genes to identify
-        # any unannotated genes in test sets
         self.database_genes = set()
         self.unannotated_genes = list()
 
         self.set_go_dict()
-        self.get_test_list()       
-
+        self.get_test_list()
+        self.export_unannotated_genes()
+        
+               
     def get_test_list(self):
         '''
-        import tab- delmited file contents
+        load gene list contents to memory
         '''
         non_empty_list = self.non_empty_list()
         if non_empty_list:
-            self.test_list = self.get_test_dict()
+            self.test_list = self.set_test_cont()
         else:
-            raise Warning('Unexpected data type, or emtpy list:', self.test_list)
+            raise Warning('Unexpected data type, or empty list:', self.test_list)
         return 
     
     def non_empty_list(self):
+        '''
+        generalizable data- type testing
+        '''
         return self.non_empty(list)
         
     def non_empty(self, d):
         '''
+        determines test list structure
+
         d: data type
         '''
         test_list = self.test_list
         empty = len(test_list) == 0
-        is_data_type = type(test_list) == d
+        is_data_type = (type(test_list) == d)
         if is_data_type and empty:
             raise Warning('Unexpected number of gene lists.')
         if is_data_type and not empty:
             return True
         return 
     
-    def get_test_dict(self):
+    def set_test_cont(self):
         '''
         insert genes into hash table as values
         '''
         test_list = self.test_list
-        
         # construct gene set hash table
-        construct_hash_table = self.test_dict_import
-        test_dict = {test_set:construct_hash_table(test_set) for test_set in test_list}
-        return test_dict
+        construct_hash_table = self.set_test_hash
+        test_structure = {test_set:construct_hash_table(test_set) for test_set in test_list}
+        return test_structure
         
-    def test_dict_import(self, current):
+    def set_test_hash(self, current):
         '''
-        current: current gene set
+        current: current test list (gene list)
         '''        
         self.test_list = current
         return self.read_test_list()
@@ -79,7 +82,8 @@ class Struct():
         '''
         test_list = self.test_list
         if not exists(test_list):
-            print('File not found: ', test_list )
+            raise FileNotFoundError(
+                ENOENT, strerror(ENOENT), test_list)
         else:
             t = loadtxt(test_list, dtype=str)
             self.unannotated_genes.append(set(t).difference(self.database_genes))
@@ -100,7 +104,7 @@ class Struct():
         go_file_path = '\\'.join([getcwd(), f])
         path_exists = exists(go_file_path)
         self.go_db = go_file_path
-        # file path check
+        
         if path_exists:
             pass
         else:
@@ -119,8 +123,7 @@ class Struct():
         '''
         go_db = self.go_db
         with open(go_db) as g: 
-            #file = [line.split('\t') for line in g]
-            file = [next(g).split('\t') for x in range(10**2)]
+            file = [line.split('\t') for line in g]
         self.tmp_go_list = file
         return
         
@@ -201,7 +204,6 @@ class Struct():
         '''
         aspect = self.current_parameters.aspect
         go_term = self.current_parameters.go_term
-        # create list structure at go term position
         self.go_dict[aspect][go_term] = list()
         return 
     
@@ -219,13 +221,12 @@ class Struct():
         if iden not in self.go_dict[aspect]['population']:
             self.go_dict[aspect]['population'].append(iden)
         return
-   
-    
 
-
-
-
-
-
-        
-    
+    def export_unannotated_genes(self):
+        '''
+        write unannotated genes to file
+        '''
+        with open('unannotated.csv', 'w') as f:
+            u = writer(f, delimiter = '\n')
+            u.writerow(list(self.unannotated_genes[0]))
+        return
