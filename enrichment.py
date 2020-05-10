@@ -1,7 +1,6 @@
 from set_parameters import Param
 from copy import deepcopy
 from scipy.stats import hypergeom
-from re import sub
 from csv import writer
 
 class G():
@@ -11,8 +10,7 @@ class G():
         s: significance threshold
         '''
         self.test_list = t.test_list
-        self.go_dict = t.go_dict
-        self.unannotated_genes = t.unannotated_genes
+        self.go_table = t.go_table
         self.significance = s
         self.hypergeom_test()
         self.export_results()
@@ -21,10 +19,10 @@ class G():
         '''
         set hyper- geometric testing parameters and conduct test
         '''
-        if not self.go_dict:
+        if not self.go_table:
             raise Warning('Missing Gene Ontology.')
         
-        self.struct = deepcopy(self.go_dict)
+        self.struct = deepcopy(self.go_table)
         test_list = self.test_list
 
         if not test_list:
@@ -146,7 +144,7 @@ class G():
         '''
         aspect = self.current_parameters.aspect
         go_term = self.current_parameters.go_term
-        size = len(self.go_dict[aspect][go_term])
+        size = len(self.go_table[aspect][go_term])
         if self.population_element:
             self.N = size
         self.struct[aspect][go_term].append(size)

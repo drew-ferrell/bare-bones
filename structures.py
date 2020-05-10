@@ -14,12 +14,12 @@ class Struct():
         '''
         self.test_list = t
         self.link = l
-        self.go_dict = dict()
+        self.go_table = dict()
 
         self.database_genes = set()
         self.unannotated_genes = list()
 
-        self.set_go_dict()
+        self.set_go_table()
         self.get_test_list()
         self.export_unannotated_genes()
         
@@ -89,7 +89,7 @@ class Struct():
             self.unannotated_genes.append(set(t).difference(self.database_genes))
             return t
         
-    def set_go_dict(self):
+    def set_go_table(self):
         self.download_go()
         self.process_go()
         self.build()
@@ -123,7 +123,8 @@ class Struct():
         '''
         go_db = self.go_db
         with open(go_db) as g: 
-            file = [line.split('\t') for line in g]
+            #file = [line.split('\t') for line in g]
+            file= [next(g) for x in range(10**2)]
         self.tmp_go_list = file
         return
         
@@ -171,7 +172,7 @@ class Struct():
         decide whether to add aspect
         '''
         aspect = self.current_parameters.aspect
-        return aspect not in self.go_dict
+        return aspect not in self.go_table
     
     def missing_go_term(self):
         '''
@@ -179,7 +180,7 @@ class Struct():
         '''
         aspect = self.current_parameters.aspect
         go_term = self.current_parameters.go_term
-        return go_term not in self.go_dict[aspect]
+        return go_term not in self.go_table[aspect]
     
     def missing_iden(self):
         '''
@@ -188,14 +189,14 @@ class Struct():
         aspect = self.current_parameters.aspect
         go_term = self.current_parameters.go_term
         iden = self.current_parameters.iden
-        return iden not in self.go_dict[aspect][go_term]       
+        return iden not in self.go_table[aspect][go_term]       
     
     def set_aspect(self):
         '''
         set key to the newly- found aspect
         '''
         aspect = self.current_parameters.aspect
-        self.go_dict[aspect] = dict(population=list())
+        self.go_table[aspect] = dict(population=list())
         return
 
     def set_go_term(self):
@@ -204,7 +205,7 @@ class Struct():
         '''
         aspect = self.current_parameters.aspect
         go_term = self.current_parameters.go_term
-        self.go_dict[aspect][go_term] = list()
+        self.go_table[aspect][go_term] = list()
         return 
     
     def set_iden(self):
@@ -216,17 +217,19 @@ class Struct():
         aspect = self.current_parameters.aspect
         go_term = self.current_parameters.go_term
         iden = self.current_parameters.iden
-        self.go_dict[aspect][go_term].append(iden)
+        self.go_table[aspect][go_term].append(iden)
         # add identifier to aspect population for statistical testing
-        if iden not in self.go_dict[aspect]['population']:
-            self.go_dict[aspect]['population'].append(iden)
+        if iden not in self.go_table[aspect]['population']:
+            self.go_table[aspect]['population'].append(iden)
         return
 
     def export_unannotated_genes(self):
         '''
         write unannotated genes to file
         '''
-        with open('unannotated.csv', 'w') as f:
-            u = writer(f, delimiter = '\n')
-            u.writerow(list(self.unannotated_genes[0]))
+        for index, test_list in enumerate(self.test_list.keys()):
+            output = test_list.replace('.tsv', '_unannotated.tsv')
+            with open(output, 'w') as u:
+                uw = writer(u, delimiter = '\n')
+                uw.writerow(list(self.unannotated_genes[index]))
         return
