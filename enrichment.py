@@ -192,10 +192,6 @@ class G():
                     for terms, iden in go_terms.items():
                         if terms != 'population':
                             current_file.write("%s,%s,%s,%s\n"%(aspect, terms, iden[0], ' '.join(iden[1:])))
-
-        with open('unannotated.csv', 'w') as f:
-            u = writer(f, delimiter = '\n')
-            u.writerow(list(self.unannotated_genes[0])                
         return
 
 
