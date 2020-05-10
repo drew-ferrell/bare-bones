@@ -22,7 +22,6 @@ class Struct():
         self.set_go_table()
         self.get_test_list()
         self.export_unannotated_genes()
-        
                
     def get_test_list(self):
         '''
@@ -123,8 +122,7 @@ class Struct():
         '''
         go_db = self.go_db
         with open(go_db) as g: 
-            #file = [line.split('\t') for line in g]
-            file= [next(g) for x in range(10**2)]
+            file = [line.split('\t') for line in g]
         self.tmp_go_list = file
         return
         
