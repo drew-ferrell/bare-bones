@@ -9,7 +9,7 @@ Use `example.py` as a guide on how to implement `structures.py`, `set_parameters
 | `set_parameters.py` | Helper class for passing parameters from Gene Ontology data structure. |
 | `enrichment.py`     | Conducts enrichment test and exports enrichment results. |
 
-__Note:__ This method is CPU- intensive.
+__Note:__ This method is CPU- intensive for large Gene Ontology databases.
 
 Gene set enrichment results and unannotated genes are written to files. 
 
