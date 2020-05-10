@@ -1,2 +1,2 @@
 # bare-bones
-Bare bones genome enrichment.
+Bare bones Gene Ontology enrichment.
