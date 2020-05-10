@@ -2,7 +2,7 @@ from set_parameters import Param
 from copy import deepcopy
 from scipy.stats import hypergeom
 from csv import writer
-
+from pprint import pprint
 class G():
     def __init__(self, t=None, s=None):
         '''
@@ -28,12 +28,12 @@ class G():
         if not test_list:
             raise Warning('Missing testing list.')
 
-        test_set_hash_table = self.test_dict_import
+        test_set_hash_table = self.set_test_hash
         print('Hypergeometric testing.')
         self.struct = {name:test_set_hash_table(test_set) for name,test_set in test_list.items()}
         return 
             
-    def test_dict_import(self, current):
+    def set_test_hash(self, current):
         '''
         add unannotated genes to unannotated set
 
@@ -72,12 +72,14 @@ class G():
                     iden = self.current_parameters.iden
                     current = self.struct[aspect][go_term]
                     test_value = current[len(current)-1]
+
                     if test_value <= self.significance:
                         self.struct[aspect][go_term] = iden
-                        self.struct[aspect][go_term].insert(0, test_value)
-
+                        self.struct[aspect][go_term].append(str(test_value))
+                        
                     else:
-                        self.struct[aspect][go_term] = [test_value, 'NA']
+                        self.struct[aspect][go_term] = ['NA', str(test_value), 0.0]
+
         return self.struct
             
     def set_population_parameters(self):
@@ -165,8 +167,6 @@ class G():
     def over_representation_test(self):
         '''
         apply hyper- geometric test
-
-        only append value if less than significance
         '''
         aspect = self.current_parameters.aspect
         go_term = self.current_parameters.go_term
@@ -174,7 +174,7 @@ class G():
         result = [hypergeom.sf(_[0]-1, _[1], _[2], _[3]) for _ in [current]]
         result = result.pop()
         current.append(result)
-        return
+        return 
     
     def export_results(self):
         '''
@@ -187,9 +187,10 @@ class G():
             with open(output, 'a') as current_file:                
                 current_file.write("%s,%s,%s,%s\n"%('aspect', 'go_term', 'significance', 'identifiers'))
                 for aspect, go_terms in enrichment.items():
-                    for terms, iden in go_terms.items():
+                    for terms, iden in go_terms.items():                     
                         if terms != 'population':
-                            current_file.write("%s,%s,%s,%s\n"%(aspect, terms, iden[0], ' '.join(iden[1:])))
+                            c = len(iden)
+                            current_file.write("%s,%s,%s,%s\n"%(aspect, terms, iden[c-2], ' '.join(iden[0:c-1])))
         return
 
 
