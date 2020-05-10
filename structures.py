@@ -119,8 +119,7 @@ class Struct():
         '''
         go_db = self.go_db
         with open(go_db) as g: 
-            #file = [line.split('\t') for line in g]
-            file = [next(g).split('\t') for x in range(10**2)]
+            file = [line.split('\t') for line in g]
         self.tmp_go_list = file
         return
         
