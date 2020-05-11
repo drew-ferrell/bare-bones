@@ -2,7 +2,7 @@ from set_parameters import Param
 from copy import deepcopy
 from scipy.stats import hypergeom
 from csv import writer
-from pprint import pprint
+
 class G():
     def __init__(self, t=None, s=None):
         '''
