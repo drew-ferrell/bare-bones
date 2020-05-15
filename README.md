@@ -9,7 +9,7 @@ Use `example.py` as a guide on how to implement `structures.py`, `set_parameters
 | `set_parameters.py` | Helper class for passing parameters from Gene Ontology data structure. |
 | `enrichment.py`     | Conducts enrichment test and exports enrichment results. |
 
-Gene set enrichment results and unannotated genes are written to files. 
+Gene set enrichment results are written to a file, following the structure below. Additionally, any unannotated genes in input gene sets are output to files corresponding to the gene set. 
 
 Below is an example of an unsorted enrichment result; NA is listed in the indentifiers column if there is no significant enrichment as determined by the significance cut- off provided.
 
