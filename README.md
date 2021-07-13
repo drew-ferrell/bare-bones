@@ -1,5 +1,5 @@
 # bare-bones
-Bare bones Gene Ontology enrichment is written in Python3 to conduct hyper- geometric testing between experimental *Arabidopsis thaliana* gene sets and *A. thaliana*, GOSLIM Gene Ontology database. 
+Bare bones Gene Ontology enrichment is written in Python3 to conduct hyper- geometric testing between experimental *Arabidopsis thaliana* gene sets and *A. thaliana*, GOSLIM Gene Ontology database. Bare Bones has been tested on a Windows machine. 
 
 Use `example.py` as a guide on how to implement `structures.py`, `set_parameters.py` and `enrichment.py`.
 
